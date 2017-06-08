@@ -22,7 +22,7 @@ def main():
         plt.xlabel("freq")
         plt.title(audio_datum.name)
     
-	for i, audio_datum in enumerate(audio_data):
+    for i, audio_datum in enumerate(audio_data):
         res = audio_datum.fdata
         res[abs(res) < 0.25*10e6] = 0
         res = irfft(res)
@@ -31,8 +31,7 @@ def main():
         plt.ylabel("ampl")
         plt.xlabel("time")
         plt.title(audio_datum.name)
-    
-	plt.show()
+    plt.show()
 
 if __name__ == '__main__':
     main()
