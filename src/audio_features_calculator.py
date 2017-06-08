@@ -26,12 +26,9 @@ class AudioFeaturesCalculator(object):
 
 
     def frames(self, data, framesize, framestep):
-        frames = []
         for i in range(0, len(data)-(framesize-1), framestep):
             logging.debug('yielding frame {}'.format(range(i,i+framesize)))
-            frames.append(data[i:i+framesize])
-            
-        return frames
+            yield data[i:i+framesize]
     
     
     def hamming_window(self, frame):
