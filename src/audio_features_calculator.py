@@ -6,20 +6,23 @@ AudioFeatures = namedtuple('AudioFeatures', 'loudness zcr brightness ss')
 
 class AudioFeaturesCalculator(object):
     
-    def calc(self, audio_data, framesize, framestep):        
-        frames = self.frames(audio_data.data, framesize, framestep)
-        # entspricht X aller Frames; rfft liefert 1. Hälfte des Frequenzspektrums
-        frame_cmplx_comps = [np.fft.rfft(self.hamming_window(frame)) for frame in frames]
-        # entspricht E aller Frames
-        frame_energy_comps = [10 * np.log10(np.abs(frame)) for frame in frame_cmplx_comps]
-        # entspricht f_k
-        frame_frequencies = [self.frame_freqs(len(frame), audio_data.samplerate) for frame in frame_cmplx_comps]
-
-        loudness = np.array([self.loudness(frame) for frame in frames])
-        zero_crossing_rate = np.array([self.zero_crossing_rate(frame) for frame in frames])
-        brightness = np.array([self.brightness(ff, fe) for ff,fe in zip(frame_frequencies,frame_energy_comps)])
-        spectral_spread = np.array([self.spectral_spread(ff, fe, b) for ff,fe,b in zip(frame_frequencies,frame_energy_comps,brightness)])
-        return AudioFeatures(loudness, zero_crossing_rate, brightness, spectral_spread)
+    def calc(self, audio_data, framesize, framestep):
+        loudness, zero_crossing_rate, brightness, spectral_spread = [],[],[],[]
+        for frame in self.frames(audio_data.data, framesize, framestep):
+            
+            # entspricht X aller Frames; rfft liefert 1. Hälfte des Frequenzspektrums
+            frame_cmplx_comps = np.fft.rfft(self.hamming_window(frame))
+            # entspricht E aller Frames
+            frame_energy_comps = 10 * np.log10(np.abs(frame_cmplx_comps))
+            # entspricht f_k
+            frame_frequencies = self.frame_freqs(len(frame_cmplx_comps), audio_data.samplerate)
+    
+            loudness.append(self.loudness(frame))
+            zero_crossing_rate.append(self.zero_crossing_rate(frame))
+            brightness.append(self.brightness(frame_frequencies, frame_energy_comps))
+            spectral_spread.append(self.spectral_spread(frame_frequencies, frame_energy_comps, brightness[-1]))
+            
+        return AudioFeatures(np.array(loudness), np.array(zero_crossing_rate), np.array(brightness), np.array(spectral_spread))
 
 
     def frames(self, data, framesize, framestep):

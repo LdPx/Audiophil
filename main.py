@@ -42,7 +42,7 @@ def main():
     framestep = int(framesize / 2)
     print('calculating audio features')
     audio_features = [AudioFeaturesCalculator().calc(ad, framesize, framestep) for ad in audio_data]
-    #pprint.pprint(audio_features)
+    pprint.pprint(audio_features)
     
 
 if __name__ == '__main__':
