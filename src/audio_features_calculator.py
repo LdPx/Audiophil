@@ -6,7 +6,7 @@ AudioFeatures = namedtuple('AudioFeatures', 'loudness zcr brightness ss')
 
 class AudioFeaturesCalculator(object):
     
-    def calc(self, audio_data, framesize, framestep):
+    def calc(self, audio_data, framesize, framestep):        
         frames = self.frames(audio_data.data, framesize, framestep)
         # entspricht X aller Frames; rfft liefert 1. Hälfte des Frequenzspektrums
         frame_cmplx_comps = [np.fft.rfft(self.hamming_window(frame)) for frame in frames]
@@ -21,6 +21,7 @@ class AudioFeaturesCalculator(object):
         spectral_spread = np.array([self.spectral_spread(ff, fe, b) for ff,fe,b in zip(frame_frequencies,frame_energy_comps,brightness)])
         return AudioFeatures(loudness, zero_crossing_rate, brightness, spectral_spread)
 
+
     def frames(self, data, framesize, framestep):
         frames = []
         for i in range(0, len(data)-(framesize-1), framestep):
@@ -28,6 +29,11 @@ class AudioFeaturesCalculator(object):
             frames.append(data[i:i+framesize])
             
         return frames
+    
+    
+    def hamming_window(self, frame):
+        indices = np.arange(0, len(frame))
+        return frame * (0.54 - 0.46 * np.cos(2*np.pi*indices/(len(frame)-1))) 
     
             
     def frame_freqs(self, framesize, samplerate):
@@ -44,15 +50,20 @@ class AudioFeaturesCalculator(object):
     
     
     def brightness(self, frame_frequencies, frame_energies):
+        if -np.inf in frame_energies:
+            return -np.inf
         return np.sum(frame_frequencies * frame_energies) / np.sum(frame_energies)
     
     
     def spectral_spread(self, frame_frequencies, frame_energies, brightness):
+        if -np.inf in frame_energies:
+            return -np.inf
         return np.sum((frame_frequencies - brightness) ** 2 * frame_energies) / np.sum(frame_energies)
     
     
-    def hamming_window(self, frame):
-        indices = np.arange(0, len(frame))
-        return frame * (0.54 - 0.46 * np.cos(2*np.pi*indices/(len(frame)-1))) 
+    
+    
+    
+    
     
     
