@@ -32,6 +32,10 @@ def plot_audio_data(audio_data):
     plt.show()
 
 def main():    
+    #import numpy as np
+    #arr = np.array([5,-5,0,-5,0,5,-5,0,0,5]) #
+    #print(np.sum(np.abs(np.sign(arr[1:]) - np.sign(arr[:-1]))) / 2)
+    
     logging.basicConfig(level=logging.INFO)    
     data_folder = os.path.join(os.getcwd(), "data")    
     print('reading audio data')
