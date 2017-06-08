@@ -7,10 +7,12 @@ AudioFeatures = namedtuple('AudioFeatures', 'loudness zcr')
 class AudioFeaturesCalculator(object):
     
     def calc(self, audio_data, framesize, framestep):
+        frame_freq_spectrums = [np.fft.rfft(self.hamming_window(f)) for f in self.frames(audio_data.data, framesize, framestep)]
         return AudioFeatures(
             np.array([self.loudness(f) for f in self.frames(audio_data.data, framesize, framestep)]),
             np.array([self.zero_crossing_rate(f) for f in self.frames(audio_data.data, framesize, framestep)])),
     
+    # TODO Liste
     def frames(self, data, framesize, framestep):
         for i in range(0, len(data)-(framesize-1), framestep):
             logging.debug('yielding frame {}'.format(range(i,i+framesize)))

@@ -6,6 +6,8 @@ from src.audio_features_calculator import AudioFeaturesCalculator
 from src.audio_data_reader import AudioDataReader
 #from numpy.fft import irfft
 
+# TODO fft aus audio_data_reader und audio_data rausnehmen
+
 def plot_audio_data(audio_data):
     for i, audio_datum in enumerate(audio_data):
         plt.figure(i)
