@@ -2,7 +2,7 @@ import logging
 from collections import namedtuple
 import numpy as np
 
-AudioFeatures = namedtuple('AudioFeatures', 'loudness zcr brightness')
+AudioFeatures = namedtuple('AudioFeatures', 'loudness zcr brightness ss')
 
 class AudioFeaturesCalculator(object):
     
@@ -14,11 +14,12 @@ class AudioFeaturesCalculator(object):
         frame_energy_comps = [10 * np.log10(np.abs(frame)) for frame in frame_cmplx_comps]
         # entspricht f_k
         frame_frequencies = [self.frame_freqs(len(frame), audio_data.samplerate) for frame in frame_cmplx_comps]
-        return AudioFeatures(
-            np.array([self.loudness(frame) for frame in frames]),
-            np.array([self.zero_crossing_rate(frame) for frame in frames]),
-            np.array([self.brightness(ff, fe) for ff,fe in zip(frame_frequencies,frame_energy_comps)])),
-    
+
+        loudness = np.array([self.loudness(frame) for frame in frames])
+        zero_crossing_rate = np.array([self.zero_crossing_rate(frame) for frame in frames])
+        brightness = np.array([self.brightness(ff, fe) for ff,fe in zip(frame_frequencies,frame_energy_comps)])
+        spectral_spread = np.array([self.spectral_spread(ff, fe, b) for ff,fe,b in zip(frame_frequencies,frame_energy_comps,brightness)])
+        return AudioFeatures(loudness, zero_crossing_rate, brightness, spectral_spread)
 
     def frames(self, data, framesize, framestep):
         frames = []
@@ -44,6 +45,10 @@ class AudioFeaturesCalculator(object):
     
     def brightness(self, frame_frequencies, frame_energies):
         return np.sum(frame_frequencies * frame_energies) / np.sum(frame_energies)
+    
+    
+    def spectral_spread(self, frame_frequencies, frame_energies, brightness):
+        return np.sum((frame_frequencies - brightness) ** 2 * frame_energies) / np.sum(frame_energies)
     
     
     def hamming_window(self, frame):
