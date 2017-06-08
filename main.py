@@ -4,7 +4,6 @@ import logging
 import matplotlib.pyplot as plt
 from src.audio_features_calculator import AudioFeaturesCalculator
 from src.audio_data_reader import AudioDataReader
-#from numpy.fft import irfft
 
 # TODO fft aus audio_data_reader und audio_data rausnehmen
 
@@ -44,6 +43,7 @@ def main():
     print('calculating audio features')
     audio_features = [AudioFeaturesCalculator().calc(ad, framesize, framestep) for ad in audio_data]
     pprint.pprint(audio_features)
+    
 
 if __name__ == '__main__':
     main()

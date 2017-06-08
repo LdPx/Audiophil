@@ -7,7 +7,11 @@ AudioFeatures = namedtuple('AudioFeatures', 'loudness zcr')
 class AudioFeaturesCalculator(object):
     
     def calc(self, audio_data, framesize, framestep):
-        frame_freq_spectrums = [np.fft.rfft(self.hamming_window(f)) for f in self.frames(audio_data.data, framesize, framestep)]
+        # rfft: liefert 1. Hälfte des Frequenzspektrums
+        frame_cmplx_comps = [np.fft.rfft(self.hamming_window(f)) for f in self.frames(audio_data.data, framesize, framestep)]
+        #logging.debug('calced complex frame components {}'.format(frame_cmplx_comps))
+        frame_energy_comps = [np.log10(np.abs(f)) * 10 for f in frame_cmplx_comps]
+        #logging.debug('calced energy frame components {}'.format(frame_energy_comps))
         return AudioFeatures(
             np.array([self.loudness(f) for f in self.frames(audio_data.data, framesize, framestep)]),
             np.array([self.zero_crossing_rate(f) for f in self.frames(audio_data.data, framesize, framestep)])),
