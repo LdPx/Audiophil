@@ -20,8 +20,3 @@ class AudioDataReader(object):
         return audio_data
     
     
-    def get_frames(self, data, framesize, framestep):
-        for i in range(0, len(data)-(framesize-1), framestep):
-            logging.debug('yielding frame {}'.format(range(i,i+framesize)))
-            yield data[i:i+framesize]
-    

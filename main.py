@@ -1,8 +1,9 @@
 import os
 import pprint
 import logging
-from src.audio_data_reader import AudioDataReader
 import matplotlib.pyplot as plt
+from src.audio_features_calculator import AudioFeaturesCalculator
+from src.audio_data_reader import AudioDataReader
 #from numpy.fft import irfft
 
 def plot_audio_data(audio_data):
@@ -30,17 +31,17 @@ def plot_audio_data(audio_data):
     #===========================================================================
     plt.show()
 
-def main():
-    logging.basicConfig(level=logging.DEBUG)    
-    data_folder = os.path.join(os.getcwd(), "data")
-    audio_data = AudioDataReader().read(data_folder)    
-    print('read audio data')
+def main():    
+    logging.basicConfig(level=logging.INFO)    
+    data_folder = os.path.join(os.getcwd(), "data")    
+    print('reading audio data')
+    audio_data = AudioDataReader().read(data_folder)
     pprint.pprint(audio_data)    
     framesize = 1024
     framestep = int(framesize / 2)
-    #pprint.pprint(list(AudioDataReader().get_frames(audio_data[0].data, framesize, framestep)))
-    #plot_audio_data(audio_data)
-    
+    print('calculating audio features')
+    audio_features = [AudioFeaturesCalculator().calc(ad, framesize, framestep) for ad in audio_data]
+    pprint.pprint(audio_features)
 
 if __name__ == '__main__':
     main()
