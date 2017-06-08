@@ -22,5 +22,8 @@ class AudioFeaturesCalculator(object):
     def zero_crossing_rate(self, frame):
         return np.sum(np.abs(np.sign(frame[1:]) - np.sign(frame[:-1]))) / (2 * len(frame))
     
+    def hamming_window(self, frame):
+        indices = np.arange(0, len(frame))
+        return frame * (0.54 - 0.46 * np.cos(2*np.pi*indices/(len(frame)-1))) 
     
     
