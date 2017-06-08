@@ -30,6 +30,11 @@ def plot_audio_data(audio_data):
     plt.show()
 
 def main():
+    import numpy as np
+    arr = np.arange(1,10)
+    pprint.pprint(list(AudioDataReader().get_frames(arr, 4, 2)))
+    return
+    
     data_folder = os.path.join(os.getcwd(), "data")
     audio_data = AudioDataReader().read(data_folder)    
     print('read audio data')
