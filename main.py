@@ -1,6 +1,7 @@
 import os
 import pprint
 import logging
+import numpy as np
 import matplotlib.pyplot as plt
 from src.audio_features_calculator import AudioFeaturesCalculator
 from src.audio_data_reader import AudioDataReader
@@ -43,7 +44,13 @@ def main():
     print('calculating audio features')
     audio_features = [AudioFeaturesCalculator().calc(ad, framesize, framestep) for ad in audio_data]
     pprint.pprint(audio_features)
-    
+    for i,audio_feature in enumerate(audio_features):
+        numzero, numinf, numnan = 0,0,0
+        for feature in audio_feature:
+            numzero += (feature == 0).sum()
+            numinf += np.isinf(feature).sum()
+            numnan += np.isnan(feature).sum()
+        print('datum {}: {} zeros, {} +/-infs, {} nans'.format(i, numzero, numinf, numnan))
 
 if __name__ == '__main__':
     main()
