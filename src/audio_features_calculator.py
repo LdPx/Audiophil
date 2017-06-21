@@ -10,7 +10,7 @@ class AudioFeaturesCalculator(object):
         loudness, zero_crossing_rate, brightness, spectral_spread = [],[],[],[]
         for frame in self.frames(audio_data.data, framesize, framestep):
             
-            # entspricht X aller Frames; rfft liefert 1. Hälfte des Frequenzspektrums
+            # entspricht X aller Frames; rfft liefert 1. HÃ¤lfte des Frequenzspektrums
             frame_cmplx_comps = np.fft.rfft(self.hamming_window(frame))
             # entspricht E aller Frames
             frame_energy_comps = np.abs(frame_cmplx_comps)
@@ -37,7 +37,7 @@ class AudioFeaturesCalculator(object):
     
     def hamming_window(self, frame):
         indices = np.arange(0, len(frame))
-        return frame * (0.54 - 0.46 * np.cos(2*np.pi*indices/(len(frame)-1))) 
+        return frame * (0.54 - 0.46 * np.cos(2*np.pi*indices/(len(frame)-1)))   # a bit too obvious maybe?
     
             
     def frame_freqs(self, framesize, samplerate):
