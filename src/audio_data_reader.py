@@ -15,7 +15,7 @@ class AudioDataReader(object):
             for file in sorted(files):
                 res = wavfile.read(os.path.join(root, file))
                 logging.info('read file {}'.format(file))
-                audio_data.append(AudioData(name=file, data=res[1], fdata=np.fft.rfft(res[1]), samplerate=res[0]))
+                audio_data.append(AudioData(name=file, data=res[1].astype(float), fdata=np.fft.rfft(res[1]), samplerate=res[0]))
                 
         return audio_data
     

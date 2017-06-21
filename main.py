@@ -8,65 +8,62 @@ from src.audio_data_reader import AudioDataReader
 
 # TODO fft aus audio_data_reader und audio_data rausnehmen - nah...
 
-def plot_audio_data(audio_data):
-    for i, audio_datum in enumerate(audio_data):
-        plt.figure(i)
-        plt.title(audio_datum.name)
+def plot_audio_features(audio_features, audio_data):
+    for i, audio_feature in enumerate(audio_features):
+        fig = plt.figure(i)
+        # plt.title(audio_data[i].name)
+        fig.canvas.set_window_title(audio_data[i].name)
         
-        plt.subplot(221)
-        plt.plot(audio_datum.data)
-        plt.ylabel("ampl")
-        plt.xlabel("time")
+        plt.subplot(321)
+        plt.plot(audio_data[i].data)
+        plt.ylabel("amplitude")
+        plt.xlabel("t")
         
-        plt.subplot(222)                    # 
-        plt.plot(abs(audio_datum.fdata))    # Scratch
-        plt.ylabel("energy")                #  that
-        plt.xlabel("freq")                  # vvvvvv
+        plt.subplot(322)
+        plt.plot(audio_data[i].fdata)
+        plt.ylabel("energy")
+        plt.xlabel("f")
         
-        #=======================================================================
-        # plt.subplot(222)
-        # plt.plot(abs(audio_datum.fdata))
-        # plt.ylabel("Zero-Crossing-Rate")
-        # plt.xlabel("time")
-        #=======================================================================
+        plt.subplot(323)
+        plt.plot(audio_feature.loudness)
+        plt.ylabel("loudness")
+        plt.xlabel("frame")
         
-        plt.subplot(223)
-        plt.plot(1)
-        plt.ylabel("Spectral Centroid")
-        plt.xlabel("time")
+        plt.subplot(324)                    
+        plt.plot(audio_feature.zcr)
+        plt.ylabel("zero_crossing_rate")                
+        plt.xlabel("frame")                  
         
-        plt.subplot(224)
-        plt.plot(1)
-        plt.ylabel("Spectral Spread")
-        plt.xlabel("time")
+        plt.subplot(325)
+        plt.plot(audio_feature.brightness)
+        plt.ylabel("Spectral Centroid (/brightness)")
+        plt.xlabel("frame")
         
-    #===========================================================================
-    # for i, audio_datum in enumerate(audio_data):
-    #     res = audio_datum.fdata
-    #     res[abs(res) < 0.25*10e6] = 0
-    #     res = irfft(res)
-    #     plt.figure(i + len(audio_data) * 2)
-    #     plt.plot(res)
-    #     plt.ylabel("ampl")
-    #     plt.xlabel("time")
-    #     plt.title(audio_datum.name)
-    #===========================================================================
+        plt.subplot(326)
+        plt.plot(audio_feature.ss)
+        plt.ylabel("Spectral Spread (/Bandbreite)")
+        plt.xlabel("frame")
+        
+        #plt.get_yaxis().get_major_formatter().set_useOffset(False) 
+        #y_formatter = plt.ticker.ScalarFormatter(useOffset=False)
+        #ax.yaxis.set_major_formatter(y_formatter)
+        
     plt.show()
 
 def main():        
-    logging.basicConfig(level=logging.INFO)    
+    logging.basicConfig(level=logging.DEBUG)    
     data_folder = os.path.join(os.getcwd(), "data")    
     print('reading audio data')
     # WavFileWarning: Chunk (non-data) not understood, skipping it. WavFileWarning
     # there is some metadata in a file that is not understood by scipy.io.wavfile.read (->audio_data_reader.py)
     audio_data = AudioDataReader().read(data_folder)
     pprint.pprint(audio_data)
-    plot_audio_data(audio_data)
     
     framesize = 1024
     framestep = int(framesize / 2)
     print('calculating audio features')
     audio_features = [AudioFeaturesCalculator().calc(audio, framesize, framestep) for audio in audio_data]
+    plot_audio_features(audio_features, audio_data)
     #pprint.pprint(audio_features)
     
     for i,audio_feature in enumerate(audio_features):
